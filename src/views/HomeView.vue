@@ -6,27 +6,25 @@
 
 <script>
   import axios from 'axios'
-  import { getLogin } from '../api/login.js'
+  import { getLogin ,a,b} from '../api/login.js'
   export default {
     data() {
       return {
-
       }
     },
     created() {
       getLogin({username:'admin',password:'admin'}).then(res=>{
         console.log(res);
       })
-      // getLogin({username:'admin',password:'admin'}).then(res => {
-      //   console.log(res);
-      // })
-      // axios({
-      //   url:process.env.VUE_APP_BASE_API+'/login',
-      //   method:"post",
-      //   params:{username:'admin',password:'admin'}
-      // }).then(res=>{
-      //   console.log(res);
-      // })
+     
+      a().then(res=>{
+        console.log(res,'a');
+      })
+     
+      b().then(res=>{
+        console.log(res,'b');
+      })
+     
     },
     methods: {
 

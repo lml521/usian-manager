@@ -12,6 +12,25 @@ const getLogin = ( data ) => {
         data,
     })
 }
+
+const a = () => {
+    return request({
+        url: "/",
+        method:"get",
+        proxy: process.env.VUE_APP_BASE_API1,
+        
+    })
+}
+const b = () => {
+    return request({
+        url: "/",
+        method:"get",
+        proxy: process.env.VUE_APP_BASE_API2,
+        
+    })
+}
 export {
-    getLogin
+    getLogin,
+    a,
+    b,
 }

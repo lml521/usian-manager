@@ -1,7 +1,16 @@
-const http = require("http")
-
-const server = http.createServer((req,res)=>{
-    res.end("hello wrold vue3")
-})
-
-server.listen(4000)
+//  web.js
+//  引入http模块
+var http = require('http')
+//设置请求监听函数
+/**
+  *  param req:   请求信息
+  *  param res:   响应信息
+  */
+var requestHandler = function (req, res) {
+            res.end('hello1');
+    }
+//创建服务器
+var web = http.createServer(requestHandler)
+//设置监听端口号
+web.listen(7000)
+console.log('http running on http://localhost:7000')
