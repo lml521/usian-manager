@@ -14,9 +14,12 @@
       }
     },
     created() {
-      getLogin({username:'admin',password:'admin'}).then(res => {
+      getLogin({username:'admin',password:'admin'}).then(res=>{
         console.log(res);
       })
+      // getLogin({username:'admin',password:'admin'}).then(res => {
+      //   console.log(res);
+      // })
       // axios({
       //   url:process.env.VUE_APP_BASE_API+'/login',
       //   method:"post",
