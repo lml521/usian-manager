@@ -5,6 +5,8 @@ import {
     Message
 } from 'element-ui'
 
+import store from '../store'
+
 const exceptionMessage = {
     1000: "用户名或者密码错误",
     20000: "密码错误",
@@ -17,16 +19,18 @@ let http = axios.create({
 })
 // 请求拦截
 http.interceptors.request.use(res => {
+    let token = store.getters.token
+    if (token) res.headers.Authorization = "Bearer " + token
     return res
 }, error => {
     return Promise.reject(error)
 })
 // 响应拦截
 http.interceptors.response.use(res => {
-    let status=res.data.code
+    let status = res.data.code
     if (status === 2000) {
-    Message.success(res.data.message)
-    return res.data
+        Message.success(res.data.message)
+        return res.data
     }
     // else if (status < 400) {
     //     return res

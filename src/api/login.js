@@ -12,11 +12,11 @@ export const getLogin = ( data ) => {
         data,
     })
 }
-
+// getUserInit
 export const getUserInit = () => {
     return request({
         url: "/user/info/admin",
-        methods: "get",
+        method: "get",
     })
 }
 

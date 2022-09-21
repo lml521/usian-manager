@@ -10,7 +10,12 @@ export default new Vuex.Store({
     userInit:getuserInit()||"",
   },
   getters: {
-    
+    token(state) {
+      return state.token
+    },
+    userInit(state) {
+      return state.userInit
+    }
   },
 
   mutations: {
@@ -33,7 +38,8 @@ export default new Vuex.Store({
    async login({commit}, form) {
       try {
         let response = await getLogin(form)
-        // console.log(response,'response');
+        // let userInit = await getUserInit()
+        // console.log(userInit, '444555');
         commit("SET_TION", response.data.token)
         return response.data.token        
       } catch (error) {
@@ -44,11 +50,13 @@ export default new Vuex.Store({
    async  getInit({commit}) {
      try {
        let userInit = await getUserInit()
+       console.log(userInit,'444555');
        commit("SET_USER_INIT", userInit.data)
        return userInit.data
       } catch (error) {
         console.log(error.message);
-      }
+     }
+    
     }
   },
   modules: {},
