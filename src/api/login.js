@@ -5,7 +5,7 @@ import request from '../utlis/require'
 //     return data
 // }
 
-export const getLogin = ( data ) => {
+export const getLogin = (data) => {
     return request({
         url: "/user/login",
         method: "post",

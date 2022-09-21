@@ -4,7 +4,7 @@ module.exports = defineConfig({
   lintOnSave: false, //关闭语法检查,
   devServer: {
     host: "localhost",
-    port: "8989",
+    port: "8888",
     https: false,
     hot: true,
     proxy: {
