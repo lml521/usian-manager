@@ -5,25 +5,25 @@
 </template>
 
 <script>
-  import axios from 'axios'
-  import { getLogin ,a,b} from '../api/login.js'
+  // import axios from 'axios'
+  // import { getLogin } from '../api/login.js'
   export default {
     data() {
       return {
       }
     },
     created() {
-      getLogin({username:'admin',password:'admin'}).then(res=>{
-        console.log(res);
-      })
+      // getLogin({username:'admin',password:'admin'}).then(res=>{
+      //   console.log(res);
+      // })
      
-      a().then(res=>{
-        console.log(res,'a');
-      })
+      // a().then(res=>{
+      //   console.log(res,'a');
+      // })
      
-      b().then(res=>{
-        console.log(res,'b');
-      })
+      // b().then(res=>{
+      //   console.log(res,'b');
+      // })
      
     },
     methods: {

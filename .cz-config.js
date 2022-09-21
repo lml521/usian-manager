@@ -1,5 +1,6 @@
 module.exports = {
     // 可选类型
+    // http://47.108.251.106:8881/api/private/v1/
     types: [{
             value: 'feat',
             name: 'feat:     新功能'

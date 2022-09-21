@@ -5,32 +5,32 @@ import request from '../utlis/require'
 //     return data
 // }
 
-const getLogin = ( data ) => {
+export const getLogin = ( data ) => {
     return request({
-        url: "/login",
+        // url: "/user/login",
+        url: "login",
         method: "post",
         data,
     })
 }
 
-const a = () => {
-    return request({
-        url: "/",
-        method:"get",
-        proxy: process.env.VUE_APP_BASE_API1,
-        
-    })
-}
-const b = () => {
-    return request({
-        url: "/",
-        method:"get",
-        proxy: process.env.VUE_APP_BASE_API2,
-        
-    })
-}
-export {
-    getLogin,
-    a,
-    b,
-}
+
+
+// const a = () => {
+//     return request({
+//         url: "/",
+//         method:"get",
+//         proxy: process.env.VUE_APP_BASE_API1,
+//     })
+// }
+
+// const b = () => {
+//     return request({
+//         url: "/",
+//         method:"get",
+//         proxy: process.env.VUE_APP_BASE_API2,
+//     })
+// }
+// export {
+//     getLogin,
+// }

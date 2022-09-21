@@ -10,15 +10,11 @@ const routes = [
     name: "home",
     component: HomeView,
   },
-  {
-    path: "/about",
-    name: "about",
-    component: () => import("../views/AboutView.vue"),
-  },
+  // 登录
   {
     path: "/login",
     name: "login",
-    component: () => import("../views/login.vue"),
+    component: () => import("../views/login"),
   },
 ];
 
