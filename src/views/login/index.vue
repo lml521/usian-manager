@@ -2,6 +2,7 @@
     <div class="login-box">
         <div class="login-form">
             <h2>梦学谷会员管理系统</h2>
+            <!-- 登录 表单 -->
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="60px" class="demo-ruleForm">
                 <el-form-item label="账号" prop="username">
                     <el-input v-model.trim="ruleForm.username" clearable></el-input>
@@ -13,12 +14,13 @@
                     <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
                 </el-form-item>
             </el-form>
+
         </div>
     </div>
 </template>
 
 <script>
-    import { getLogin } from '../../api/login.js'
+    // import { getLogin ,getUserInit} from '../../api/login.js';//封装 api 
     export default {
         data() {
             return {
@@ -43,17 +45,22 @@
                 this.$refs[formName].validate((valid) => {
                     // 当验证通过时候
                     if (!valid) return
-                    
+                // 调用 登录 方法
                     this.hanleLogin()
                 });
             },
-            async hanleLogin() {
-                try {
-                    const response = await getLogin(this.ruleForm)
-                    console.log(response);
-                } catch (error) {
-                    console.log(error.message, 'error');
-                }
+
+        async hanleLogin() {
+            //  使用 vuex 异步 调用  登录  api
+            let token=await this.$store.dispatch("login",this.ruleForm)
+            // 判断 是否获取到 token 
+            if(!token) return 
+            //  使用 vuex 异步 调用  用户信息  api
+            let init =await this.$store.dispatch("getInit")
+            // 判断 是否获取到 用户信息
+            if(!init) return 
+            // 当获取到用户信息 跳转 主页面
+            this.$router.push("/")          
             },
         }
     }

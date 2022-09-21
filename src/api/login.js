@@ -7,10 +7,16 @@ import request from '../utlis/require'
 
 export const getLogin = ( data ) => {
     return request({
-        // url: "/user/login",
-        url: "login",
+        url: "/user/login",
         method: "post",
         data,
+    })
+}
+
+export const getUserInit = () => {
+    return request({
+        url: "/user/info/admin",
+        methods: "get",
     })
 }
 

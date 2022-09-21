@@ -1,40 +1,51 @@
 <template>
   <div>
 
+    <el-container>
+      <el-header>Header</el-header>
+      <el-container>
+        <el-aside width="200px">Aside</el-aside>
+        <el-main>Main</el-main>
+      </el-container>
+    </el-container>
   </div>
 </template>
 
 <script>
-  // import axios from 'axios'
-  // import { getLogin } from '../api/login.js'
-  export default {
-    data() {
-      return {
-      }
-    },
-    created() {
-      // getLogin({username:'admin',password:'admin'}).then(res=>{
-      //   console.log(res);
-      // })
-     
-      // a().then(res=>{
-      //   console.log(res,'a');
-      // })
-     
-      // b().then(res=>{
-      //   console.log(res,'b');
-      // })
-     
-    },
-    methods: {
-
-    },
-    components: {
+export default {
+  data () {
+    return {
 
     }
+  },
+  methods: {
+
+  },
+  components: {
+
   }
+}
 </script>
 
 <style scoped lang='scss'>
-
+  .el-header, .el-footer {
+    background-color: #B3C0D1;
+    color: #333;
+    height: 50px;
+    }
+  
+  .el-aside {
+    background-color: #D3DCE6;
+    color: #333;
+  
+    }
+  
+  .el-main {
+    background-color: #E9EEF3;
+    color: #333;
+    }
+  
+  body > .el-container {
+    margin-bottom: 40px;
+  }
 </style>
