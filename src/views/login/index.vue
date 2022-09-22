@@ -20,7 +20,7 @@
 </template>
 
 <script>
-    // import { getLogin ,getUserInit} from '../../api/login.js';//封装 api 
+    // import { getLogin ,getUserInfo} from '../../api/login.js';//封装 api 
     export default {
         data() {
             return {
@@ -56,9 +56,9 @@
             // 判断 是否获取到 token 
             if(!token) return 
             //  使用 vuex 异步 调用  用户信息  api
-            let init =await this.$store.dispatch("getInit")
+            let info =await this.$store.dispatch("getInfo")
             // 判断 是否获取到 用户信息
-            if(!init) return 
+            if(!info) return 
             // 当获取到用户信息 跳转 主页面
             this.$router.push("/")          
             },

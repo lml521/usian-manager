@@ -12,11 +12,18 @@ export const getLogin = (data) => {
         data,
     })
 }
-// getUserInit
-export const getUserInit = () => {
+// getUserInfo
+export const getUserInfo = () => {
     return request({
         url: "/user/info/admin",
         method: "get",
+    })
+}
+
+export const logout = () => {
+    return request({
+        url: "/user/logout",
+        method:"post"
     })
 }
 
