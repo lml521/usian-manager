@@ -6,6 +6,8 @@ import router from "./router";
 import store from "./store";
 // 页面权限
 import './permission'
+
+import './style/commit.css'
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
 new Vue({

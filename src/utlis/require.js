@@ -24,7 +24,7 @@ http.interceptors.request.use(res => {
 http.interceptors.response.use(res => {
     let status = res.data.code
     if (status === 2000) {
-        Message.success(res.data.message)
+        // Message.success(res.data.message)
         return res.data
     }
     // else if (status < 400) {

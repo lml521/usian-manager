@@ -13,7 +13,6 @@
             <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item icon="el-icon-edit" command="changePass">修改密码</el-dropdown-item>
                 <el-dropdown-item icon="el-icon-s-fold" command="logout">退出登录</el-dropdown-item>
-
             </el-dropdown-menu>
         </el-dropdown>
     </div>

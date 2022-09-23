@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Aside 侧边栏 -->
-    <el-menu default-active="activedPath" class="el-menu-vertical-demo" 
+    <el-menu :default-active="activedPath" class="el-menu-vertical-demo" 
       background-color="#545c64" text-color="#fff"
        active-text-color="#ffd04b"
        router>
@@ -40,7 +40,8 @@
     },
     computed:{
       activedPath(){
-        return this.$route.path
+        console.log(this.$route.path);
+        return this.$route.path 
       }
     },
   

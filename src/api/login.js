@@ -4,7 +4,7 @@ import request from '../utlis/require'
 //     let data = await http.post('/login',params)
 //     return data
 // }
-
+// 登录
 export const getLogin = (data) => {
     return request({
         url: "/user/login",
@@ -12,7 +12,7 @@ export const getLogin = (data) => {
         data,
     })
 }
-// getUserInfo
+// 用户信息
 export const getUserInfo = () => {
     return request({
         url: "/user/info/admin",
@@ -20,6 +20,7 @@ export const getUserInfo = () => {
     })
 }
 
+// 退出
 export const logout = () => {
     return request({
         url: "/user/logout",

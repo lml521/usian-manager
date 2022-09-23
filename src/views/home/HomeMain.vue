@@ -18,9 +18,7 @@ export default {
     crumbTitle(){
       return !(this.$route.path==='/index')
     }
-
-  },
-  
+  },  
 }
 </script>
 

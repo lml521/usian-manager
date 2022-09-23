@@ -60,7 +60,7 @@
             // 判断 是否获取到 用户信息
             if(!info) return 
             // 当获取到用户信息 跳转 主页面
-            this.$router.push("/")          
+            this.$router.push("/index")          
             },
         }
     }

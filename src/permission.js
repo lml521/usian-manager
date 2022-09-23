@@ -1,7 +1,6 @@
 import router from './router'
 import store from './store'
 
-
 router.beforeEach(async(to, from, next) => {
     let token = store.getters.token
     // 当 有 token 的 时候
@@ -50,6 +49,5 @@ router.beforeEach(async(to, from, next) => {
         } else {
             next('/login')
         }
-
     }
 })
