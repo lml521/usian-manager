@@ -149,9 +149,8 @@
         this.$message.success("查询成功")
       },
       // 重置
-      onReset(queryForm) {
-        console.log('重置');
-        this.$refs[queryForm].resetFields();
+    async  onReset(queryForm) {
+      await  this.$refs[queryForm].resetFields();
       },
 
       // 添加 修改 弹出 模态框
@@ -164,7 +163,9 @@
           this.handleFindItem(id)
           return
         } else {// 没有id 则 为添加用户
-          this.onReset('ruleForm')
+          for(let i in this.form){
+            this.form[i]=""
+          }
           this.dialogTitle = "添加用户"
         }
       },

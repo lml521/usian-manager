@@ -31,7 +31,6 @@
         </el-form-item>
       </el-form>
     </div>
-
     <!-- 封装 表格 -->
     <tables :tableData="MemberList" :tableHead="tableHead" 
     @handleOpen="handleOpen" @handleDelete="handleDelete">
@@ -40,7 +39,6 @@
 
     <!-- 模态框 -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="40%">
-
       <!--模态框 表单 -->
       <el-form :model="form" :rules="rules" ref="ruleForm" label-width="100px">
         <el-form-item label="会员卡号" prop="cardNum">
@@ -144,12 +142,7 @@
         }
       }
     },
-    // 过滤 字符类型
-    filters: {
-      filterPayType(val) {
-        return MemberFind.payType.find(item => item.type == val).name
-      }
-    },
+    
 
     created() {
       this.getmember()
@@ -190,9 +183,9 @@
         this.$message.success("查询成功")
       },
       // 重置
-      onReset(queryForm) {
+     async onReset(queryForm) {
         console.log('重置');
-        this.$refs[queryForm].resetFields();
+       await this.$refs[queryForm].resetFields();
       },
 
       // 添加 修改 弹出 模态框
@@ -206,7 +199,9 @@
           return
         } else {// 没有id 则 为添加用户
           this.dialogTitle = "添加用户"
-          this.onReset('ruleForm')
+          for(let i in this.form){
+            this.form[i]=""
+          }
         
         }
       },

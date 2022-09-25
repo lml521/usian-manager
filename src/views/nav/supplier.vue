@@ -21,12 +21,17 @@
         </el-form-item>
       </el-form>
     </div>
-    <tables :tableData="supplierList" :tableHead="tableHead"     @handleOpen="handleOpen" @handleDelete="handleDelete"></tables>
+    <tables :tableData="supplierList" :tableHead="tableHead" 
+    @handleOpen="handleOpen" @handleDelete="handleDelete">
+    </tables>
 
 
 
     <!-- 模态框 -->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="40%">
+    <el-dialog 
+    :title="dialogTitle" 
+    :visible.sync="dialogVisible"
+    @close-on-click-modal="onReset('ruleForm')" width="40%">
 
       <!--模态框 表单 -->
       <el-form :model="form" :rules="rules" ref="ruleForm" label-width="100px">
@@ -48,7 +53,8 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="cancelSubmit">取 消</el-button>
-        <el-button type="primary" @click="confirmSubmit('ruleForm')">确 定</el-button>
+        <el-button type="primary"
+         @click="confirmSubmit('ruleForm')">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -60,7 +66,7 @@
 
 <script>
   import supplierApi from '../../api/supplier.js'
-
+  import staffApi from '../../api/staff.js';//api
   import tables from '../../components/Table'
   import pagination from '../../components/pagination.vue'
 
@@ -70,6 +76,8 @@
     },
     data() {
       return {
+
+
         tableHead: [
           { label: "序号", type: "index" },
           { prop: "name", label: "供应商名称" },
@@ -117,6 +125,12 @@
         }
 
       },
+    
+
+
+
+
+
       //  分页  每一页的数量
       handleSizeChange(size) {
         this.pageSize = size
@@ -138,8 +152,9 @@
         this.$message.success("查询成功")
       },
       // 重置
-      onReset(queryForm) {
-        this.$refs[queryForm].resetFields();
+       onReset(queryForm) {
+        console.log(1);
+         this.$refs[queryForm].resetFields();
       },
 
       // 添加 修改 弹出 模态框
@@ -153,8 +168,12 @@
           return
         } else {// 没有id 则 为添加用户         
           this.dialogTitle = "添加用户"
-          this.onReset('ruleForm')
+          for(let i in this.form){
+            this.form[i]=""
+          }
         }
+
+           
       },
 
       // 点击编辑获取当前行的数据
@@ -185,7 +204,7 @@
       },
 
       // 取消提交
-      cancelSubmit() {      
+      cancelSubmit() {
         this.dialogVisible = false
         this.onReset('ruleForm')
       },
