@@ -1,6 +1,7 @@
 <template>
   <div>
-    <!-- 商品 -->
+    <!-- 商品 管理 -->
+
     <!-- 搜索 -->
     <div class="lml">
       <el-form ref="queryForm" :inline="true" :model="query">
@@ -11,8 +12,7 @@
           <el-input v-model="query.code" placeholder="商品编码"></el-input>
         </el-form-item>
         <el-form-item prop="supplierName">
-          <el-input v-model="query.supplierName" placeholder="商品供应商"
-          @focus="handleInput"></el-input>
+          <el-input v-model="query.supplierName" placeholder="商品供应商" @focus="handleInput"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit">查询</el-button>
@@ -23,8 +23,6 @@
     </div>
 
     <!-- 提供供应商 模态框 -->
-
-
     <el-dialog :title="dialogTable" :visible.sync="dialogTableFlag" width="50%">
       <!-- 表单 -->
       <el-form ref="queryForm" :inline="true" :model="query">
@@ -41,23 +39,33 @@
         <el-table-column property="name" label="供应商名称"></el-table-column>
         <el-table-column property="linkman" label="联系人"></el-table-column>
       </el-table>
-
-      <pagination :page="page" 
-      :pageSize="pageSize"
-       :total="supplierTotal"
-        @handleCurrentChange="handleCurrentChange"
-        @handleSizeChange="handleSizeChange"></pagination>
+      <!-- 模态框 分页 -->
+      <el-pagination class="lml" 
+      :current-page="dialogPage" 
+      :page-sizes="[10, 20, 30, 50]" 
+      :page-size="dialogPageSize"
+      @size-change="dialogSizeChange" 
+      @current-change="dialogCurrentChange" 
+      layout="total, sizes, prev, pager, next"
+      :total="supplierTotal">
+      </el-pagination>
     </el-dialog>
 
 
-    <!-- 封装 -->
-    <tables :tableData="goodsList" :tableHead="tableHead" 
-    @handleOpen="handleOpen" @handleDelete="handleDelete">
+    <!-- 封装 分页-->
+    <tables 
+    :tableData="goodsList" 
+    :tableHead="tableHead" 
+    @handleOpen="handleOpen" 
+    @handleDelete="handleDelete">
     </tables>
 
 
-    <!-- 模态框 -->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="40%">
+    <!-- 添加 修改 模态框  -->
+    <el-dialog 
+    :title="dialogTitle" 
+    :visible.sync="dialogVisible" 
+    width="40%">
       <!--模态框 表单 -->
       <el-form :model="form" :rules="rules" ref="ruleForm" label-width="100px">
         <el-form-item label="商品名称" prop="name">
@@ -91,17 +99,23 @@
     </el-dialog>
 
     <!-- 分页 -->
-    <pagination :page="page" :pageSize="pageSize" :total="total" @handleCurrentChange="handleCurrentChange"
-      @handleSizeChange="handleSizeChange"></pagination>
+    <pagination 
+    :page="page" 
+    :pageSize="pageSize" 
+    :total="total" 
+    @handleCurrentChange="handleCurrentChange"
+    @handleSizeChange="handleSizeChange">
+    </pagination>
+
   </div>
 </template>
 
 <script>
-  import goodsApi from '../../api/goods.js';//api
-  import supplierApi from '../../api/supplier.js'
-  import staffApi from '../../api/staff.js';//api
+  import goodsApi from '../../api/goods.js';// 商品 api
+  import supplierApi from '../../api/supplier.js';// 供应商 api
+ 
   import tables from '../../components/Table';//封装表格
-  import pagination from '../../components/pagination.vue'
+  import pagination from '../../components/pagination.vue';//封装 分页
 
   export default {
     components: {
@@ -110,8 +124,11 @@
     },
     data() {
       return {
-        supplierList:[],//供用商数据
-        supplierTotal:10,
+        dialogPage: 1,//模态框 表格 分页 当前页
+        dialogPageSize: 10,//模态框 表格 分页 一页显示多少条
+
+        supplierList: [],//供用商数据
+        supplierTotal: 10,
         tableHead: [
           { label: "序号", type: "index" },
           { label: "商品名称", prop: "name" },
@@ -150,16 +167,16 @@
         rules: {
           code: { required: true, message: '请填写商品编码', trigger: 'blur' },
           name: { required: true, message: '请输入供货商名称', trigger: 'blur' },
-          purchasePrice: { required: true, message: '请填写零售价', trigger: 'blur' },//
+          purchasePrice: { required: true, message: '请填写零售价', trigger: 'blur' },
         }
       }
     },
     created() {
-      this.getgoods()
-      this.getSupplier()
-      
+      this.getgoods();//商品管理  数据
+      this.getSupplier();//供应商  数据      
     },
     methods: {
+
       // 获取展示数据
       async getgoods() {
         try {
@@ -172,13 +189,13 @@
         }
 
       },
-       // 获取展示数据
-       async getSupplier() {
+      // 获取展示数据
+      async getSupplier() {
         try {
           let response = await supplierApi.getSupplierList(this.page, this.pageSize, this.query)
           this.supplierList = response.data.rows
           this.supplierTotal = response.data.total
-          console.log(this.supplierList,this.supplierTotal, '获取供货商数据');
+          console.log(this.supplierList, this.supplierTotal, '获取供货商数据');
         } catch (e) {
           console.log(e.message, '获取供货商数据');
         }
@@ -186,7 +203,7 @@
       },
 
 
-
+      // 商品管理 分页
       //  分页  每一页的数量
       handleSizeChange(size) {
         this.pageSize = size
@@ -198,6 +215,21 @@
         this.page = page
         console.log(this.page, '分页当前页');
         this.getgoods()
+      },
+
+
+      // 模态框 分页  
+      // 每一页的数量
+      dialogSizeChange(size) {
+        console.log(size);
+        this.dialogPageSize = size
+        this.getSupplier()
+      },
+      // 当前页
+      dialogCurrentChange(page) {
+        console.log(page);
+        this.dialogPage = page
+        this.getSupplier()
       },
 
 
@@ -214,7 +246,6 @@
 
       // 添加 修改 弹出 模态框
       handleOpen(id) {
-        console.log(Boolean(id));
         console.log(id, '添加/修改 查看是否有id');
         this.dialogVisible = true
         if (Boolean(id)) {
@@ -224,8 +255,8 @@
           return
         } else {// 没有id 则 为添加用户
           this.dialogTitle = "添加用户"
-          for(let i in this.form){
-            this.form[i]=""
+          for (let i in this.form) {
+            this.form[i] = ""
           }
         }
       },
@@ -315,7 +346,6 @@
         this.form.supplierName = val.name
         this.dialogTableFlag = false
       }
-
     },
 
 

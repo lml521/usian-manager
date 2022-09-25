@@ -1,6 +1,7 @@
 <template>
   <div>
     <!-- 会员管理 -->
+    
     <!-- 搜索 -->
     <div class="lml">
       <el-form ref="queryForm" :inline="true" :model="query">
@@ -32,8 +33,7 @@
       </el-form>
     </div>
     <!-- 封装 表格 -->
-    <tables :tableData="MemberList" :tableHead="tableHead" 
-    @handleOpen="handleOpen" @handleDelete="handleDelete">
+    <tables :tableData="MemberList" :tableHead="tableHead" @handleOpen="handleOpen" @handleDelete="handleDelete">
     </tables>
 
 
@@ -86,10 +86,11 @@
   </div>
 </template>
 <script>
-  import MemberApi from '../../api/member.js'
-  import MemberFind from '../../enum/member.js'
+  import MemberApi from '../../api/member.js';//会员管理 api
+  import MemberFind from '../../enum/member.js';// 会员管理 支付类型 数据
+
   import tables from '../../components/Table.vue';//表格 封装 组件
-  import pagination from '../../components/pagination.vue'
+  import pagination from '../../components/pagination.vue';// 封装 分页
 
   export default {
     components: {
@@ -110,7 +111,7 @@
         ],
         payType: MemberFind.payType,
 
-        dialogTitle: "添加用户",    
+        dialogTitle: "添加用户",
         dialogVisible: false,
         MemberList: [],//展示数据
 
@@ -142,7 +143,7 @@
         }
       }
     },
-    
+
 
     created() {
       this.getmember()
@@ -183,9 +184,9 @@
         this.$message.success("查询成功")
       },
       // 重置
-     async onReset(queryForm) {
+      async onReset(queryForm) {
         console.log('重置');
-       await this.$refs[queryForm].resetFields();
+        await this.$refs[queryForm].resetFields();
       },
 
       // 添加 修改 弹出 模态框
@@ -199,10 +200,9 @@
           return
         } else {// 没有id 则 为添加用户
           this.dialogTitle = "添加用户"
-          for(let i in this.form){
-            this.form[i]=""
+          for (let i in this.form) {
+            this.form[i] = ""
           }
-        
         }
       },
 

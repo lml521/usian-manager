@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- 商品 -->
+    <!-- 员工 管理  -->
     <!-- 搜索 -->
     <div class="lml">
       <el-form ref="queryForm" :inline="true" :model="query">
@@ -17,13 +17,12 @@
         </el-form-item>
       </el-form>
     </div>
-    <tables :tableData="staffList" :tableHead="tableHead"
-    @handleOpen="handleOpen" @handleDelete="handleDelete"></tables>
+    <!--  封装 表格 -->
+    <tables :tableData="staffList" :tableHead="tableHead" @handleOpen="handleOpen" @handleDelete="handleDelete">
+    </tables>
 
- 
     <!-- 模态框 -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="40%">
-
       <!--模态框 表单 -->
       <el-form :model="form" :rules="rules" ref="ruleForm" label-width="100px">
         <el-form-item label="账号" prop="username">
@@ -52,19 +51,15 @@
       </span>
     </el-dialog>
 
-    <!-- 分页 -->
-    <pagination 
-    :page="page" 
-    :pageSize="pageSize" 
-    :total="total"
-    @handleCurrentChange="handleCurrentChange"
-    @handleSizeChange="handleSizeChange"
-    ></pagination>
+    <!-- 封装 分页 -->
+    <pagination :page="page" :pageSize="pageSize" :total="total" @handleCurrentChange="handleCurrentChange"
+      @handleSizeChange="handleSizeChange"></pagination>
   </div>
 </template>
 
 <script>
-  import staffApi from '../../api/staff.js';//api
+  import staffApi from '../../api/staff.js';// 员工 api
+
   import tables from '../../components/Table'//封装表格
   import pagination from '../../components/pagination.vue';//封装分页
   export default {
@@ -149,8 +144,8 @@
         this.$message.success("查询成功")
       },
       // 重置
-    async  onReset(queryForm) {
-      await  this.$refs[queryForm].resetFields();
+      async onReset(queryForm) {
+        await this.$refs[queryForm].resetFields();
       },
 
       // 添加 修改 弹出 模态框
@@ -163,8 +158,8 @@
           this.handleFindItem(id)
           return
         } else {// 没有id 则 为添加用户
-          for(let i in this.form){
-            this.form[i]=""
+          for (let i in this.form) {
+            this.form[i] = ""
           }
           this.dialogTitle = "添加用户"
         }
@@ -198,7 +193,7 @@
       },
 
       // 取消提交
-      cancelSubmit() {     
+      cancelSubmit() {
         this.dialogVisible = false
         this.onReset('ruleForm')
       },

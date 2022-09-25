@@ -1,6 +1,7 @@
 <template>
   <div>
-    <!-- 会员管理 -->
+    <!-- 供应商 管理 -->
+
     <!-- 搜索 -->
     <div class="lml">
       <el-form ref="queryForm" :inline="true" :model="query">
@@ -76,8 +77,6 @@
     },
     data() {
       return {
-
-
         tableHead: [
           { label: "序号", type: "index" },
           { prop: "name", label: "供应商名称" },
@@ -123,14 +122,7 @@
         } catch (e) {
           console.log(e.message, '获取供货商数据');
         }
-
       },
-    
-
-
-
-
-
       //  分页  每一页的数量
       handleSizeChange(size) {
         this.pageSize = size
@@ -153,7 +145,6 @@
       },
       // 重置
        onReset(queryForm) {
-        console.log(1);
          this.$refs[queryForm].resetFields();
       },
 
@@ -171,9 +162,7 @@
           for(let i in this.form){
             this.form[i]=""
           }
-        }
-
-           
+        }     
       },
 
       // 点击编辑获取当前行的数据
@@ -195,7 +184,6 @@
             // 判断表单里面是否有 id ,如果有 调用 编辑事件，否则调用添加事件
             this.form.id ? this.handleEdit(this.form) : this.handleAddData()
             this.dialogVisible = false; //模态框隐藏   
-
           } else {
             console.log('提交表单中有不符合规格');
             return false;
@@ -246,7 +234,6 @@
           } catch (e) {
             console.log(e.message, '删除错误');
           }
-
         }).catch(() => {
           this.$message.info("已取消删除");
         });
