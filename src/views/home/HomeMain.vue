@@ -1,8 +1,7 @@
 <template>
   <div>
       <!-- 面包屑 -->
-        <!-- {{this.$route}} -->
-        <Breadcrumb v-if="crumbTitle"></Breadcrumb>
+    <Breadcrumb v-if="crumbTitle"></Breadcrumb>
     <router-view />
   </div>
 </template>

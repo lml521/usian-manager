@@ -8,6 +8,9 @@ import store from "./store";
 import './permission'
 
 import './style/commit.css'
+
+
+
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
 new Vue({
