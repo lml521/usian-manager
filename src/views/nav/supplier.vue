@@ -4,85 +4,88 @@
 
     <!-- 搜索 -->
     <div class="lml">
-      <el-form ref="queryForm" :inline="true" :model="query">
-        <el-form-item prop="name">
-          <el-input v-model="query.name" placeholder="供应商名称"></el-input>
-        </el-form-item>
-        <el-form-item prop="linkman">
-          <el-input v-model="query.linkman" placeholder="联系人"></el-input>
-        </el-form-item>
-        <el-form-item prop="mobile">
-          <el-input v-model="query.mobile" placeholder="联系电话"></el-input>
-        </el-form-item>
-
-        <el-form-item>
+      <queryForms ref="queryForm" :formItem="formItem" :inline="true" :dialogConfig="dialogConfig" v-model.sync="query">
+        <template v-slot:active>
           <el-button type="primary" @click="onSubmit">查询</el-button>
           <el-button type="primary" @click="handleOpen(false)">新增</el-button>
-          <el-button @click="onReset('queryForm')">重置</el-button>
-        </el-form-item>
-      </el-form>
+          <el-button @click="onResetFrom(query)">重置</el-button>
+        </template>
+      </queryForms>
     </div>
-    <tables :tableData="supplierList" :tableHead="tableHead" 
-    @handleOpen="handleOpen" @handleDelete="handleDelete">
+
+    <!-- 表格 -->
+    <tables :tableData="supplierList" :tableHead="tableHead">
+      <!-- 使用作用域 插槽  实现  操作 -->
+      <!--  -->
+      <template v-slot:active="scope">
+        <el-button type="primary" @click="handleOpen(scope.row.id)">编辑
+        </el-button>
+        <el-button type="danger" @click="handleDelete(scope.row.id)">删除
+        </el-button>
+      </template>
+      <!--  -->
     </tables>
 
-
-
     <!-- 模态框 -->
-    <el-dialog 
-    :title="dialogTitle" 
-    :visible.sync="dialogVisible"
-    @close-on-click-modal="onReset('ruleForm')" width="40%">
-
-      <!--模态框 表单 -->
-      <el-form :model="form" :rules="rules" ref="ruleForm" label-width="100px">
-        <el-form-item label="供应商名称" prop="name">
-          <el-input v-model="form.name"></el-input>
-        </el-form-item>
-        <el-form-item label="联系人" prop="linkman">
-          <el-input v-model="form.linkman"></el-input>
-        </el-form-item>
-        <el-form-item label="联系电话" prop="mobile">
-          <el-input v-model="form.mobile"></el-input>
-
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input type="textarea" v-model="form.remark"></el-input>
-        </el-form-item>
-      </el-form>
-
-
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="cancelSubmit">取 消</el-button>
-        <el-button type="primary"
-         @click="confirmSubmit('ruleForm')">确 定</el-button>
-      </span>
-    </el-dialog>
-
+    <Dialog ref="dialogRefs" :dialogVisible.sync="dialogVisible" :dialogConfig="dialogConfig" :inline="false"
+      @cancelDialog="cancelSubmit" @confirmSubmit="confirmSubmit" @handleAddData="handleAddData"
+      @handleEdit="handleEdit" v-model.sync="form" :rules="rules" :formItem="dialogFormList">
+    </Dialog>
     <!-- 分页 -->
     <pagination :page="page" :pageSize="pageSize" :total="total" @handleCurrentChange="handleCurrentChange"
-      @handleSizeChange="handleSizeChange"></pagination>
+      @handleSizeChange="handleSizeChange">
+    </pagination>
   </div>
 </template>
 
 <script>
   import supplierApi from '../../api/supplier.js'
   import staffApi from '../../api/staff.js';//api
-  import tables from '../../components/Table'
-  import pagination from '../../components/pagination.vue'
-
   export default {
     components: {
-      tables, pagination
+      tables: () => import('../../components/Table.vue'),//表格 封装 组件
+      pagination: () => import('../../components/pagination.vue'),// 封装 分页
+      queryForms: () => import('../../components/queryForm.vue'),//头部 搜索 封装
+      Dialog: () => import("../../components/Dialog.vue"),//弹出框
     },
     data() {
       return {
+        // 模态框 信息
+        dialogConfig: {
+          title: "添加用户",
+          width: "500px",
+          labelWidth: "100px",
+        },
+
+        dialogFormList: [
+          { label: "供应商名称", placeholder: "供应商名称", width: "300px", prop: "name", type: "input" },
+          { label: "联系人", placeholder: "联系人", width: "300px", prop: "linkman", type: "input" },
+          { label: "联系电话", placeholder: "联系电话", width: "300px", prop: "mobile", type: "input" },
+          { label: "备注", placeholder: "备注", width: "300px", prop: "remark", type: "textarea" },
+          { type: "active" }
+        ],
+
+        // 搜索数据
+        formItem: [
+          { placeholder: "供应商名称", prop: "name", type: "input" },
+          { placeholder: "联系人", prop: "supplierName", type: "input" },
+          { placeholder: "联系电话", prop: "code", type: "input" },
+          { type: "active" }
+        ],
+
         tableHead: [
-          { label: "序号", type: "index" },
+          { label: "序号", type: "index", width: 60 },
           { prop: "name", label: "供应商名称" },
           { prop: "linkman", label: "联系人" },
           { prop: "mobile", label: "联系电话" },
           { prop: "remark", label: "备注" },
+          {
+            label: "操作", type: "active", width: 180,
+            // actions: [
+            //   { type: "primary", text: "编辑", event: this.edit },
+            //   { type: "danger", text: "删除", event: this.del }
+            // ]
+          }
         ],
         dialogTitle: "添加用户",
         dialogVisible: false,
@@ -112,13 +115,13 @@
       this.getSupplier()
     },
     methods: {
+
       // 获取展示数据
       async getSupplier() {
         try {
           let response = await supplierApi.getSupplierList(this.page, this.pageSize, this.query)
-          this.supplierList = response.data.rows
+          this.supplierList = response.data.rows;
           this.total = response.data.total
-          console.log(this.supplierList, this.total);
         } catch (e) {
           console.log(e.message, '获取供货商数据');
         }
@@ -144,9 +147,13 @@
         this.$message.success("查询成功")
       },
       // 重置
-       onReset(queryForm) {
-         this.$refs[queryForm].resetFields();
+
+      onResetFrom(value) {
+        for (let i in value) {
+          value[i] = ""
+        }
       },
+    
 
       // 添加 修改 弹出 模态框
       handleOpen(id) {
@@ -159,10 +166,10 @@
           return
         } else {// 没有id 则 为添加用户         
           this.dialogTitle = "添加用户"
-          for(let i in this.form){
-            this.form[i]=""
+          for (let i in this.form) {
+            this.form[i] = ""
           }
-        }     
+        }
       },
 
       // 点击编辑获取当前行的数据
@@ -177,28 +184,20 @@
       },
 
       // 确认提交
-      confirmSubmit(formName) {
-        // 判断表单 中 是否全部 符合规则
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            // 判断表单里面是否有 id ,如果有 调用 编辑事件，否则调用添加事件
-            this.form.id ? this.handleEdit(this.form) : this.handleAddData()
-            this.dialogVisible = false; //模态框隐藏   
-          } else {
-            console.log('提交表单中有不符合规格');
-            return false;
-          }
-        })
+      confirmSubmit() {
+        this.$refs["dialogRefs"].confirm()
       },
+    
 
       // 取消提交
       cancelSubmit() {
         this.dialogVisible = false
-        this.onReset('ruleForm')
+        this.onResetFrom(this.form)
       },
 
       // 添加 事件
       async handleAddData() {
+        this.dialogVisible = false
         try {
           let response = await supplierApi.SupplierAdd(this.form)
           console.log(response, '添加数据');
@@ -210,6 +209,7 @@
       },
       // 修改 事件
       async handleEdit(data) {
+        this.dialogVisible = false
         try {
           let response = await supplierApi.SupplierEdit(data.id, data)
           console.log(response, '点击确认修改 返回');

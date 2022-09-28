@@ -7,11 +7,10 @@
 </template>
 
 <script>
-  import Breadcrumb from '../../components/Breadcrumb.vue'
 export default {
   name:'index',
   components:{
-    Breadcrumb,
+    Breadcrumb:()=>import('../../components/Breadcrumb.vue'),
   },
   computed:{
     crumbTitle(){

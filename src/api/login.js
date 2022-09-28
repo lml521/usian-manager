@@ -4,6 +4,7 @@ import request from '../utlis/require'
 //     let data = await http.post('/login',params)
 //     return data
 // }
+
 // 登录
 export const getLogin = (data) => {
     return request({
@@ -29,6 +30,7 @@ export const logout = () => {
 }
 
 
+// 多级跨越
 
 // const a = () => {
 //     return request({

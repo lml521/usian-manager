@@ -50,5 +50,4 @@ export default {
     SupplierItem,
     SupplierEdit,
     SupplierDelete,
-
 }

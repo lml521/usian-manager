@@ -50,5 +50,4 @@ export default {
     staffItem,
     staffEdit,
     staffDelete,
-
 }

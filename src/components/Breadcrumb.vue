@@ -1,6 +1,6 @@
 <template>
     <el-card>
-        <!-- 面包屑 -->
+        <!--封装 面包屑 -->
         <el-breadcrumb separator="/" >
             <el-breadcrumb-item  class="item">
                 <span>{{title}}</span>

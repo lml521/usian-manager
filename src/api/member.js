@@ -23,6 +23,7 @@ const getMenberAdd = (data) => {
 
 // 点击编辑 获取当前行的 信息
 const getFindItem = (id) => {
+    console.log(id,'api---11111');
     return request({
         url: `/member/${id}`,
         method: "get",

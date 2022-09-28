@@ -1,55 +1,31 @@
 <template>
   <div>
     <!-- 员工 管理  -->
-    <!-- 搜索 -->
+    <!-- 封装 搜索 -->
     <div class="lml">
-      <el-form ref="queryForm" :inline="true" :model="query">
-        <el-form-item prop="username">
-          <el-input v-model="query.username" placeholder="账号"></el-input>
-        </el-form-item>
-        <el-form-item prop="name">
-          <el-input v-model="query.name" placeholder="姓名"></el-input>
-        </el-form-item>
-        <el-form-item>
+      <queryForms ref="queryForm" :formItem="formItem" :inline="true" :dialogConfig="dialogConfig" v-model.sync="query">
+        <template v-slot:active>
           <el-button type="primary" @click="onSubmit">查询</el-button>
           <el-button type="primary" @click="handleOpen(false)">新增</el-button>
-          <el-button @click="onReset('queryForm')">重置</el-button>
-        </el-form-item>
+          <el-button @click="onResetFrom(query)">重置</el-button>
+        </template>
+      </queryForms>
       </el-form>
     </div>
     <!--  封装 表格 -->
-    <tables :tableData="staffList" :tableHead="tableHead" @handleOpen="handleOpen" @handleDelete="handleDelete">
+    <tables :tableData="staffList" :tableHead="tableHead">
+      <template v-slot:active="scope">
+        <el-button type="primary" @click="handleOpen">编辑</el-button>
+        <el-button type="danger" @click="handleDelete">删除</el-button>
+      </template>
     </tables>
 
-    <!-- 模态框 -->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="40%">
-      <!--模态框 表单 -->
-      <el-form :model="form" :rules="rules" ref="ruleForm" label-width="100px">
-        <el-form-item label="账号" prop="username">
-          <el-input v-model="form.username"></el-input>
-        </el-form-item>
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="form.name"></el-input>
-        </el-form-item>
-        <el-form-item label="年龄" prop="age">
-          <el-input v-model="form.age"></el-input>
-        </el-form-item>
-        <el-form-item label="电话" prop="mobile">
-          <el-input v-model="form.mobile"></el-input>
-        </el-form-item>
-        <el-form-item label="薪酬" prop="salary">
-          <el-input v-model="form.salary"></el-input>
-        </el-form-item>
-        <el-form-item label="入职时间" prop="entryDate">
-          <el-date-picker value-format="yyyy-MM-dd" v-model="form.entryDate" type="date" placeholder="选择入职时间">
-          </el-date-picker>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="cancelSubmit">取 消</el-button>
-        <el-button type="primary" @click="confirmSubmit('ruleForm')">确 定</el-button>
-      </span>
-    </el-dialog>
+
+    <!-- 封装 模态框 -->
+    <Dialog ref="dialogRefs" :dialogVisible.sync="dialogVisible" :dialogConfig="dialogConfig" :inline="false"
+      @cancelDialog="cancelSubmit" @confirmSubmit="confirmSubmit" @handleAddData="handleAddData"
+      @handleEdit="handleEdit" v-model.sync="form" :rules="rules" :formItem="dialogFormList">
+    </Dialog>
 
     <!-- 封装 分页 -->
     <pagination :page="page" :pageSize="pageSize" :total="total" @handleCurrentChange="handleCurrentChange"
@@ -59,25 +35,54 @@
 
 <script>
   import staffApi from '../../api/staff.js';// 员工 api
-
-  import tables from '../../components/Table'//封装表格
-  import pagination from '../../components/pagination.vue';//封装分页
   export default {
     components: {
-      tables,//封装表格
-      pagination,//分页
+      tables: () => import('../../components/Table.vue'),//表格 封装 组件
+      pagination: () => import('../../components/pagination.vue'),// 封装 分页
+      queryForms: () => import('../../components/queryForm.vue'),//头部 搜索 封装
+      Dialog: () => import("../../components/Dialog.vue"),//弹出框
     },
     data() {
       return {
+        // 搜索数据
+        formItem: [
+          { placeholder: "账号", prop: "username", type: "input" },
+          { placeholder: "姓名", prop: "name", type: "input" },
+          { type: "active" }
+        ],
+        // 模态框 信息
+        dialogConfig: {
+          title: "添加用户",
+          width: "500px",
+          labelWidth: "100px",
+        },
+
+        // 模态框 里面的 表单 数据
+        dialogFormList: [
+          { label: "账号", placeholder: "账号", width: "300px", prop: "username", type: "input" },
+          { label: "姓名", placeholder: "姓名", width: "300px", prop: "name", type: "input" },
+          { label: "年龄", placeholder: "年龄", width: "300px", prop: "age", type: "input" },
+          { label: "电话", placeholder: "电话", width: "300px", prop: "mobile", type: "input" },
+          { label: "薪酬", placeholder: "薪酬", width: "300px", prop: "entryDate", type: "input" },
+          { type: "active" }
+        ],
+
         // 表格 头  
         tableHead: [
-          { type: "index", label: "序号", width: "50" },
+          { type: "index", label: "序号", width: 60 },
           { prop: "username", label: "账号" },
           { prop: "name", label: "姓名" },
           { prop: "age", label: "年龄" },
           { prop: "mobile", label: "电话" },
           { prop: "salary", label: "薪酬" },
           { prop: "entryDate", label: "入职时间" },
+          {
+            label: "操作", type: "active", width: 180,
+            actions: [
+              { type: "primary", text: "编辑", event: this.edit },
+              { type: "danger", text: "删除", event: this.del }
+            ]
+          }
         ],
         dialogTitle: "添加用户",
         dialogVisible: false,
@@ -100,9 +105,9 @@
           supplierName: "",//供应商
         },
         rules: {
-          code: { required: true, message: '请填写商品编码', trigger: 'blur' },
-          name: { required: true, message: '请输入供货商名称', trigger: 'blur' },
-          purchasePrice: { required: true, message: '请填写零售价', trigger: 'blur' },//
+          username: { required: true, message: '请填写账号', trigger: 'blur' },
+          name: { required: true, message: '请输入姓名', trigger: 'blur' },
+
         }
       }
     },
@@ -110,14 +115,15 @@
       this.getstaff()
     },
     methods: {
+
+
+
       // 获取展示数据
       async getstaff() {
         try {
           let response = await staffApi.getstaffList(this.page, this.pageSize, this.query)
-          console.log(response, 'response');
           this.staffList = response.data.rows
           this.total = response.data.total
-          console.log(this.staffList, this.total);
         } catch (e) {
           console.log(e.message, '获取供货商数据');
         }
@@ -144,10 +150,11 @@
         this.$message.success("查询成功")
       },
       // 重置
-      async onReset(queryForm) {
-        await this.$refs[queryForm].resetFields();
+      onResetFrom(value) {
+        for (let i in value) {
+          value[i] = ""
+        }
       },
-
       // 添加 修改 弹出 模态框
       handleOpen(id) {
         console.log(id, '添加/修改 查看是否有id');
@@ -177,29 +184,19 @@
       },
 
       // 确认提交
-      confirmSubmit(formName) {
-        // 判断表单 中 是否全部 符合规则
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            // 判断表单里面是否有 id ,如果有 调用 编辑事件，否则调用添加事件
-            this.form.id ? this.handleEdit(this.form) : this.handleAddData()
-            this.dialogVisible = false; //模态框隐藏   
-
-          } else {
-            console.log('提交表单中有不符合规格');
-            return false;
-          }
-        })
+      confirmSubmit() {
+        this.$refs["dialogRefs"].confirm()
       },
 
       // 取消提交
       cancelSubmit() {
         this.dialogVisible = false
-        this.onReset('ruleForm')
+        this.onResetFrom(this.form)
       },
 
       // 添加 事件
       async handleAddData() {
+        this.dialogVisible = false
         try {
           let response = await staffApi.staffAdd(this.form)
           console.log(response, '添加数据');
@@ -211,6 +208,7 @@
       },
       // 修改 事件
       async handleEdit(data) {
+        this.dialogVisible = false
         try {
           let response = await staffApi.staffEdit(data.id, data)
           console.log(response, '点击确认修改 返回');

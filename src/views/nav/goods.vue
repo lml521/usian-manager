@@ -4,28 +4,22 @@
 
     <!-- 搜索 -->
     <div class="lml">
-      <el-form ref="queryForm" :inline="true" :model="query">
-        <el-form-item prop="name">
-          <el-input v-model="query.name" placeholder="商品名称"></el-input>
-        </el-form-item>
-        <el-form-item prop="code">
-          <el-input v-model="query.code" placeholder="商品编码"></el-input>
-        </el-form-item>
-        <el-form-item prop="supplierName">
-          <el-input v-model="query.supplierName" placeholder="商品供应商" @focus="handleInput"></el-input>
-        </el-form-item>
-        <el-form-item>
+      <queryForms ref="queryForm" :formItem="formItem" :inline="true" @handleInput="handleInput"
+        :dialogConfig="dialogConfig" v-model.sync="query">
+        <template v-slot:active>
           <el-button type="primary" @click="onSubmit">查询</el-button>
           <el-button type="primary" @click="handleOpen(false)">新增</el-button>
-          <el-button @click="onReset('queryForm')">重置</el-button>
-        </el-form-item>
-      </el-form>
+          <el-button @click="onResetFrom(query)">重置</el-button>
+        </template>
+      </queryForms>
     </div>
+
+    <!-- 封装 模态框 -->
 
     <!-- 提供供应商 模态框 -->
     <el-dialog :title="dialogTable" :visible.sync="dialogTableFlag" width="50%">
       <!-- 表单 -->
-      <el-form ref="queryForm" :inline="true" :model="query">
+      <el-form :inline="true" :model="query">
         <el-form-item prop="supplierName">
           <el-input v-model="query.supplierName" placeholder="商品供应商" @focus="handleInput"></el-input>
         </el-form-item>
@@ -40,32 +34,24 @@
         <el-table-column property="linkman" label="联系人"></el-table-column>
       </el-table>
       <!-- 模态框 分页 -->
-      <el-pagination class="lml" 
-      :current-page="dialogPage" 
-      :page-sizes="[10, 20, 30, 50]" 
-      :page-size="dialogPageSize"
-      @size-change="dialogSizeChange" 
-      @current-change="dialogCurrentChange" 
-      layout="total, sizes, prev, pager, next"
-      :total="supplierTotal">
+      <el-pagination class="lml" :current-page="dialogPage" :page-sizes="[10, 20, 30, 50]" :page-size="dialogPageSize"
+        @size-change="dialogSizeChange" @current-change="dialogCurrentChange" layout="total, sizes, prev, pager, next"
+        :total="supplierTotal">
       </el-pagination>
     </el-dialog>
 
 
-    <!-- 封装 分页-->
-    <tables 
-    :tableData="goodsList" 
-    :tableHead="tableHead" 
-    @handleOpen="handleOpen" 
-    @handleDelete="handleDelete">
+    <!-- 封装 表格-->
+    <tables :tableData="goodsList" :tableHead="tableHead">
+      <template v-slot:active="scope">
+        <el-button type="primary" @click="handleOpen">编辑</el-button>
+        <el-button type="danger" @click="handleDelete">删除</el-button>
+      </template>
     </tables>
 
 
     <!-- 添加 修改 模态框  -->
-    <el-dialog 
-    :title="dialogTitle" 
-    :visible.sync="dialogVisible" 
-    width="40%">
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="40%">
       <!--模态框 表单 -->
       <el-form :model="form" :rules="rules" ref="ruleForm" label-width="100px">
         <el-form-item label="商品名称" prop="name">
@@ -98,13 +84,9 @@
       </span>
     </el-dialog>
 
-    <!-- 分页 -->
-    <pagination 
-    :page="page" 
-    :pageSize="pageSize" 
-    :total="total" 
-    @handleCurrentChange="handleCurrentChange"
-    @handleSizeChange="handleSizeChange">
+    <!--封装 分页 -->
+    <pagination :page="page" :pageSize="pageSize" :total="total" @handleCurrentChange="handleCurrentChange"
+      @handleSizeChange="handleSizeChange">
     </pagination>
 
   </div>
@@ -113,31 +95,42 @@
 <script>
   import goodsApi from '../../api/goods.js';// 商品 api
   import supplierApi from '../../api/supplier.js';// 供应商 api
- 
-  import tables from '../../components/Table';//封装表格
-  import pagination from '../../components/pagination.vue';//封装 分页
 
   export default {
     components: {
-      tables,//表格
-      pagination,//分页
+      tables: () => import('../../components/Table.vue'),//表格 封装 组件
+      pagination: () => import('../../components/pagination.vue'),// 封装 分页
+      queryForms: () => import('../../components/queryForm.vue'),//头部 搜索 封装
+      Dialog: () => import("../../components/Dialog.vue"),//弹出框
     },
     data() {
       return {
         dialogPage: 1,//模态框 表格 分页 当前页
         dialogPageSize: 10,//模态框 表格 分页 一页显示多少条
-
+        dialogConfig: {
+          title: "添加用户",
+          width: "500px",
+          labelWidth: "100px",
+        },
         supplierList: [],//供用商数据
         supplierTotal: 10,
         tableHead: [
-          { label: "序号", type: "index" },
+          { label: "序号", type: "index", width: 60 },
           { label: "商品名称", prop: "name" },
           { label: "商品编码", prop: "code" },
           { label: "商品规格", prop: "spec" },
           { label: "零售价", prop: "purchasePrice" },
           { label: "进货价", prop: "retailPrice" },
           { label: "库存数量", prop: "storageNum" },
-          { label: "供应商", prop: "supplierName" }
+          { label: "供应商", prop: "supplierName" },
+          {
+            label: "操作", type: "active", width: 200,
+            // 使用 tableHead 传递 数据 实现  操作按钮 *****
+            // actions: [
+            // { type: "primary", text: "编辑",event:this.edit },
+            // { type: "danger", text: "删除" ,event:this.del}
+            // ]
+          }
         ],
         dialogTitle: "添加用户",// 表单 模态框  标题
         dialogVisible: false,// 表单 模态框
@@ -164,6 +157,13 @@
           storageNum: "",
           supplierName: "",//供应商
         },
+        // 搜索数据
+        formItem: [
+          { placeholder: "商品名称", prop: "name", type: "input" },
+          { placeholder: "商品编号", prop: "code", type: "input" },
+          { placeholder: "供应商名称", prop: "supplierName", type: "bounceDialog" },
+          { type: "active" }
+        ],
         rules: {
           code: { required: true, message: '请填写商品编码', trigger: 'blur' },
           name: { required: true, message: '请输入供货商名称', trigger: 'blur' },
@@ -176,7 +176,6 @@
       this.getSupplier();//供应商  数据      
     },
     methods: {
-
       // 获取展示数据
       async getgoods() {
         try {
@@ -187,7 +186,6 @@
         } catch (e) {
           console.log(e.message, '获取供货商数据');
         }
-
       },
       // 获取展示数据
       async getSupplier() {
@@ -199,9 +197,7 @@
         } catch (e) {
           console.log(e.message, '获取供货商数据');
         }
-
       },
-
 
       // 商品管理 分页
       //  分页  每一页的数量
@@ -217,7 +213,6 @@
         this.getgoods()
       },
 
-
       // 模态框 分页  
       // 每一页的数量
       dialogSizeChange(size) {
@@ -232,7 +227,6 @@
         this.getSupplier()
       },
 
-
       // 搜索
       onSubmit() {
         this.page = 1
@@ -240,8 +234,10 @@
         this.$message.success("查询成功")
       },
       // 重置
-      async onReset(queryForm) {
-        await this.$refs[queryForm].resetFields();
+      onResetFrom(value) {
+        for (let i in value) {
+          value[i] = ""
+        }
       },
 
       // 添加 修改 弹出 模态框
@@ -290,7 +286,7 @@
       // 取消提交
       cancelSubmit() {
         this.dialogVisible = false
-        this.onReset('ruleForm')
+        this.onResetFrom(this.form)
       },
 
       // 添加 事件
@@ -345,7 +341,23 @@
         this.query.supplierName = val.name
         this.form.supplierName = val.name
         this.dialogTableFlag = false
-      }
+      },
+
+
+
+
+      // // 使用 tableHead 传递 数据 实现  操作按钮  *****
+      // // 编辑
+      // edit(val) {
+      //   console.log(val, '');
+      //   this.handleOpen(val.id)
+      // },
+      // // 删除
+      // del(val) {
+      //   console.log(val, '');
+      //   this.handleDelete(val.id)
+      // },
+
     },
 
 

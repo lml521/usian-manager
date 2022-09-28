@@ -9,6 +9,8 @@ import './permission'
 
 import './style/commit.css'
 
+// bt default
+// su
 
 
 Vue.use(ElementUI);

@@ -1,7 +1,11 @@
 // 引入axios
 import axios from 'axios'
 // 引入element-ui 的提示
-import {Message} from 'element-ui'
+// import { Message } from 'element-ui'
+
+import {
+    Loading
+} from 'element-ui';
 import store from '../store'
 const exceptionMessage = {
     1000: "用户名或者密码错误",
@@ -12,17 +16,44 @@ let http = axios.create({
     // baseURL: process.env.VUE_APP_HASE_URL,
     timeout: 5000,
 })
+
+// 封装 Loading 加载
+
+const loadings = {
+    loadingInstance :null,
+    option() {
+        if (!this.loadingInstance) {
+            this.loadingInstance=Loading.service({
+                text:"拼命加载中",
+                spinner:"el-icon-loading",
+                background:"rgba(0, 0, 0, 0.8)",
+            })
+        }
+    },
+    close() {
+        if (this.loadingInstance !== null) {
+            this.loadingInstance.close()
+            this.loadingInstance = null
+        }
+    }
+}
 // 请求拦截
 http.interceptors.request.use(res => {
+
+
     let token = store.getters.token
     if (token) res.headers.Authorization = "Bearer " + token
+    loadings.option()
     return res
 }, error => {
+    loadings.close()
     return Promise.reject(error)
+
 })
 // 响应拦截
 http.interceptors.response.use(res => {
     let status = res.data.code
+    loadings.close()
     if (status === 2000) {
         // Message.success(res.data.message)
         return res.data
@@ -37,7 +68,8 @@ http.interceptors.response.use(res => {
     // _showError(code, message)
     // return res
 }, error => {
-       return Promise.resolve(error)
+    loadings.close()
+    return Promise.resolve(error)
     // console.log(error.response.data.errorCode, 'error111');
     // let {msg,errorCode} = error.response.data
     // console.log(msg, errorCode);
